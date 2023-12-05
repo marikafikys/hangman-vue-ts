@@ -7,7 +7,7 @@
 	</div>
 
 	<GamePopup v-if="false" />
-	<GameNotification />
+	<GameNotification ref="notification" />
 </template>
 
 <script setup lang="ts">
@@ -21,6 +21,8 @@ import GameNotification from "./components/GameNotification.vue";
 
 const word = ref("василий");
 const letters = ref<string[]>([]);
+const notification = ref<InstanceType<typeof GameNotification> | null>(null);
+
 const correctLetters = computed(() =>
 	letters.value.filter((el) => word.value.includes(el))
 );
@@ -29,6 +31,11 @@ const wrongLetters = computed(() =>
 );
 
 window.addEventListener("keydown", ({ key }) => {
+	if (letters.value.includes(key)) {
+		notification.value?.showNotification();
+		setTimeout(() => notification.value?.hideNotification(), 2000);
+		return;
+	}
 	if (/[а-яА-ЯёЁ]/.test(key)) {
 		letters.value.push(key.toLowerCase());
 	}
