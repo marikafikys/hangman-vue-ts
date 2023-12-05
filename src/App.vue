@@ -1,7 +1,7 @@
 <template>
 	<GameHeader />
 	<div class="game-container">
-		<GameFugure />
+		<GameFugure :wrong-letters-count="wrongLetters.length" />
 		<GameWrongLetters :wrong-letters="wrongLetters" />
 		<GameWord :word="word" :correct-letters="correctLetters" />
 	</div>
