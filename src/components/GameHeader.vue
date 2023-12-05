@@ -3,6 +3,6 @@
 	<p>Отгадайте имя - введите букву (Кириллица)</p>
 </template>
 
-<script setup></script>
+<script setup lang="ts"></script>
 
 <style scoped></style>

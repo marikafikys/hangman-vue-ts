@@ -23,7 +23,15 @@ import { useLetters } from "./composables/useLetters";
 import { useNotification } from "./composables/useNotification";
 
 const { word, getRandomWord } = useRandomWord();
-const { letters, correctLetters, wrongLetters, isWin,  isLose, addLetter, resetLetters } = useLetters(word);
+const {
+	letters,
+	correctLetters,
+	wrongLetters,
+	isWin,
+	isLose,
+	addLetter,
+	resetLetters,
+} = useLetters(word);
 const { notification, showNotification } = useNotification();
 const popup = ref<InstanceType<typeof GamePopup> | null>(null);
 const restart = async () => {
