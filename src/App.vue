@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+import axios from "axios";
 import { ref, computed, watch } from "vue";
 import GameHeader from "./components/GameHeader.vue";
 import GameFugure from "./components/GameFugure.vue";
@@ -19,9 +20,21 @@ import GameWord from "./components/GameWord.vue";
 import GamePopup from "./components/GamePopup.vue";
 import GameNotification from "./components/GameNotification.vue";
 
-const word = ref("василий");
-const letters = ref<string[]>([]);
+const word = ref("");
+const getRandomWord = async () => {
+	try {
+		const { data } = await axios<{ FirstName: string }>(
+			"https://api.randomdatatools.ru/?unescaped=false&params=FirstName"
+		);
+		word.value = data.FirstName.toLowerCase();
+	} catch (error) {
+		console.log(error);
+		word.value = "";
+	}
+};
+getRandomWord();
 
+const letters = ref<string[]>([]);
 const notification = ref<InstanceType<typeof GameNotification> | null>(null);
 const popup = ref<InstanceType<typeof GamePopup> | null>(null);
 const correctLetters = computed(() =>
@@ -62,6 +75,7 @@ window.addEventListener("keydown", ({ key }) => {
 });
 
 const restart = () => {
+	getRandomWord();
 	letters.value = [];
 	popup.value?.closePopup();
 };
