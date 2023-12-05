@@ -11,7 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
 import { ref, computed, watch } from "vue";
 import GameHeader from "./components/GameHeader.vue";
 import GameFugure from "./components/GameFugure.vue";
@@ -19,34 +18,22 @@ import GameWrongLetters from "./components/GameWrongLetters.vue";
 import GameWord from "./components/GameWord.vue";
 import GamePopup from "./components/GamePopup.vue";
 import GameNotification from "./components/GameNotification.vue";
+import { useRandomWord } from "./composables/useRandomWord";
+import { useLetters } from "./composables/useLetters";
 
-const word = ref("");
-const getRandomWord = async () => {
-	try {
-		const { data } = await axios<{ FirstName: string }>(
-			"https://api.randomdatatools.ru/?unescaped=false&params=FirstName"
-		);
-		word.value = data.FirstName.toLowerCase();
-	} catch (error) {
-		console.log(error);
-		word.value = "";
-	}
-};
-getRandomWord();
+const { word, getRandomWord } = useRandomWord();
+const {
+	letters,
+	correctLetters,
+	wrongLetters,
+	isWin,
+	isLose,
+	addLetter,
+	resetLetters,
+} = useLetters(word);
 
-const letters = ref<string[]>([]);
 const notification = ref<InstanceType<typeof GameNotification> | null>(null);
 const popup = ref<InstanceType<typeof GamePopup> | null>(null);
-const correctLetters = computed(() =>
-	letters.value.filter((el) => word.value.includes(el))
-);
-const wrongLetters = computed(() =>
-	letters.value.filter((el) => !word.value.includes(el))
-);
-const isLose = computed(() => wrongLetters.value.length === 6);
-const isWin = computed(() =>
-	[...word.value].every((el) => correctLetters.value.includes(el))
-);
 
 watch(wrongLetters, () => {
 	if (isLose.value) {
@@ -69,14 +56,12 @@ window.addEventListener("keydown", ({ key }) => {
 		setTimeout(() => notification.value?.hideNotification(), 2000);
 		return;
 	}
-	if (/[а-яА-ЯёЁ]/.test(key)) {
-		letters.value.push(key.toLowerCase());
-	}
+	addLetter(key);
 });
 
-const restart = () => {
-	getRandomWord();
-	letters.value = [];
+const restart = async () => {
+	await getRandomWord();
+	resetLetters();
 	popup.value?.closePopup();
 };
 </script>
